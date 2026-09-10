@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#fbfbf8" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>close.</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app">
+    <main class="phone">
+      <section id="auth-view" class="auth-page">
+        <div class="auth-wrap">
+          <div class="brand"><small>Loop closer</small>close.</div>
+          <div class="auth-copy">
+            <h1>Finish what’s open.</h1>
+            <p>Private. One loop. One current step.</p>
+          </div>
+          <form id="login-form" class="auth-form">
+            <label>Email<input id="email" type="email" autocomplete="email" required /></label>
+            <label>Password<input id="password" type="password" autocomplete="current-password" required /></label>
+            <button class="primary" type="submit">Sign in</button>
+            <p id="auth-error" class="error" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+
+      <section id="main-view" class="hidden">
+        <section id="dashboard-view" class="page">
+          <div class="topbar">
+            <div class="brand"><small>Loop closer</small>close.</div>
+            <button id="new-loop-btn" class="icon-btn" aria-label="New loop">+</button>
+          </div>
+
+          <section class="hero">
+            <h1>Finish what’s open.</h1>
+            <div class="hero-stat"><strong id="open-count">0</strong><span>open loops</span></div>
+          </section>
+          <div id="dashboard-subline" class="subline"></div>
+          <section id="loops-list" class="loop-list" aria-label="Open loops"></section>
+          <div class="dashboard-footer"><button id="signout-btn" class="quiet-btn">Sign out</button></div>
+        </section>
+
+        <section id="loop-view" class="page hidden">
+          <header class="detail-top">
+            <button id="back-btn" class="icon-btn" aria-label="Back">←</button>
+            <div id="detail-title" class="detail-title"></div>
+            <button id="loop-settings-btn" class="icon-btn" aria-label="Loop settings">···</button>
+          </header>
+
+          <section id="ab-card" class="ab-card"></section>
+          <section id="current-wrap"></section>
+          <section>
+            <div class="path-head">
+              <h2>The path</h2>
+              <button id="add-step-btn" class="path-add">+ Add step</button>
+            </div>
+            <div id="timeline" class="timeline"></div>
+          </section>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="loop-dialog" class="sheet-dialog">
+    <form id="loop-form" method="dialog" class="sheet">
+      <div class="handle"></div>
+      <div class="sheet-head">
+        <h3 id="loop-dialog-title">New loop</h3>
+        <button type="button" class="close-sheet" data-close="loop-dialog">×</button>
+      </div>
+      <input id="loop-id" type="hidden" />
+      <div class="field"><label>Loop name</label><input id="loop-title" required placeholder="What are you closing?" /></div>
+      <div class="field"><label>A · Current state</label><textarea id="loop-a" required placeholder="Where is it now?"></textarea></div>
+      <div class="field"><label>B · Done</label><textarea id="loop-b" required placeholder="What does done look like?"></textarea></div>
+      <button class="primary full" type="submit">Save</button>
+      <button id="toggle-loop-btn" class="sheet-link hidden" type="button"></button>
+    </form>
+  </dialog>
+
+  <dialog id="step-dialog" class="sheet-dialog">
+    <form id="step-form" method="dialog" class="sheet">
+      <div class="handle"></div>
+      <div class="sheet-head">
+        <h3 id="step-dialog-title">Add step</h3>
+        <button type="button" class="close-sheet" data-close="step-dialog">×</button>
+      </div>
+      <input id="step-id" type="hidden" />
+      <input id="step-insert-after" type="hidden" />
+      <div class="field"><label>Step</label><input id="step-title" required placeholder="What has to happen next?" /></div>
+      <div class="two">
+        <div class="field"><label>Status</label><select id="step-status">
+          <option value="not_started">Not started</option>
+          <option value="active">Active</option>
+          <option value="waiting">Waiting</option>
+          <option value="delegated">Delegated</option>
+          <option value="closed">Closed</option>
+        </select></div>
+        <div class="field"><label>Deadline</label><input id="step-deadline" type="datetime-local" /></div>
+      </div>
+      <div class="two">
+        <div class="field"><label>Waiting on</label><input id="step-waiting-on" placeholder="Optional" /></div>
+        <div class="field"><label>Delegated to</label><input id="step-delegated-to" placeholder="Optional" /></div>
+      </div>
+      <div class="field"><label>Delegation note</label><textarea id="step-delegation-note" placeholder="What did you hand off?"></textarea></div>
+      <div class="field"><label>Hard rule</label><textarea id="step-hard-rule" placeholder="Do not move forward until..."></textarea></div>
+      <label class="current-check"><input id="step-current" type="checkbox" /> <span>Make this the current step</span></label>
+      <button class="primary full" type="submit">Save step</button>
+      <button id="add-after-step-btn" class="sheet-link hidden" type="button">+ Add a step after this</button>
+    </form>
+  </dialog>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "Loop Closer",
+  "short_name": "close.",
+  "description": "Move open loops from current state to definition of done.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fbfbf8",
+  "theme_color": "#fbfbf8",
+  "icons": []
+}
