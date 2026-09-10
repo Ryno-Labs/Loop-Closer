@@ -1,50 +1,24 @@
-# Loop Closer — Live Build
+# Loop Closer v4
 
-This is the real Supabase-connected version using the approved V3 visual direction.
+Private personal PWA using Netlify + Supabase.
 
-## Files to upload to GitHub
-
-Upload every file in this folder to the root of one GitHub repository:
-
+## Update an existing deployment
+Replace these repo files with the v4 files and push/commit:
 - index.html
 - styles.css
 - app.js
-- config.js
 - manifest.webmanifest
 - sw.js
-- supabase.sql
 
-## 1. Supabase
+Keep your existing `config.js` if it already contains your Supabase URL and publishable/anon key.
+No new SQL is required if you already ran the supplied `supabase.sql`.
 
-Create a Supabase project.
+Netlify should redeploy automatically from GitHub. The service worker cache name was bumped and now activates immediately so the new UI replaces the prior cached version faster.
 
-In **SQL Editor**, paste the full contents of `supabase.sql` and run it once.
-
-Then create your private user in **Authentication → Users**. Use your own email and password. Public sign-up is not required.
-
-## 2. Connect the app
-
-In Supabase, copy:
-
-- Project URL
-- Publishable key (or legacy anon key)
-
-Open `config.js` and replace the two placeholder values.
-
-The publishable/anon key is safe to place in browser code. Privacy comes from Supabase authentication + the Row Level Security policies in `supabase.sql`.
-
-## 3. GitHub Pages
-
-Create a repository, upload all files to the repository root, then:
-
-**Settings → Pages → Build and deployment → Deploy from a branch → main → /(root) → Save**
-
-GitHub will provide the Pages URL.
-
-## 4. iPhone install
-
-Open the Pages URL in Safari → Share → Add to Home Screen.
-
-## First test
-
-Create one real loop with A, B, and 3–5 steps. Mark one step current, start/stop the timer, add a deadline, then close the current step. The next open step should automatically become current.
+## Fresh setup
+1. Create a Supabase project.
+2. Run `supabase.sql` once in SQL Editor.
+3. Create your user under Supabase Authentication.
+4. Put the Supabase Project URL and publishable/anon key into `config.js`.
+5. Push these files to a private GitHub repo.
+6. Connect that repo to Netlify. No build command is required.

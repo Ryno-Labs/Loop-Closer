@@ -19,12 +19,12 @@
           <div class="brand"><small>Loop closer</small>close.</div>
           <div class="auth-copy">
             <h1>Finish what’s open.</h1>
-            <p>Private. One loop. One current step.</p>
+            <p>Private. One loop. One current move.</p>
           </div>
           <form id="login-form" class="auth-form">
             <label>Email<input id="email" type="email" autocomplete="email" required /></label>
             <label>Password<input id="password" type="password" autocomplete="current-password" required /></label>
-            <button class="primary" type="submit">Sign in</button>
+            <button id="login-btn" class="primary" type="submit">Sign in</button>
             <p id="auth-error" class="error" aria-live="polite"></p>
           </form>
         </div>
@@ -34,15 +34,23 @@
         <section id="dashboard-view" class="page">
           <div class="topbar">
             <div class="brand"><small>Loop closer</small>close.</div>
-            <button id="new-loop-btn" class="icon-btn" aria-label="New loop">+</button>
+            <button id="new-loop-btn" class="icon-btn strong" aria-label="New loop">+</button>
           </div>
 
           <section class="hero">
-            <h1>Finish what’s open.</h1>
-            <div class="hero-stat"><strong id="open-count">0</strong><span>open loops</span></div>
+            <div>
+              <div class="eyebrow">Open loops</div>
+              <h1>What needs closing?</h1>
+            </div>
+            <div class="hero-stat"><strong id="open-count">0</strong><span>open</span></div>
           </section>
           <div id="dashboard-subline" class="subline"></div>
           <section id="loops-list" class="loop-list" aria-label="Open loops"></section>
+
+          <details id="closed-section" class="closed-section hidden">
+            <summary><span>Closed loops</span><span id="closed-count">0</span></summary>
+            <div id="closed-list" class="closed-list"></div>
+          </details>
           <div class="dashboard-footer"><button id="signout-btn" class="quiet-btn">Sign out</button></div>
         </section>
 
@@ -55,7 +63,7 @@
 
           <section id="ab-card" class="ab-card"></section>
           <section id="current-wrap"></section>
-          <section>
+          <section class="path-section">
             <div class="path-head">
               <h2>The path</h2>
               <button id="add-step-btn" class="path-add">+ Add step</button>
@@ -68,53 +76,87 @@
   </div>
 
   <dialog id="loop-dialog" class="sheet-dialog">
-    <form id="loop-form" method="dialog" class="sheet">
+    <form id="loop-form" class="sheet">
       <div class="handle"></div>
       <div class="sheet-head">
-        <h3 id="loop-dialog-title">New loop</h3>
-        <button type="button" class="close-sheet" data-close="loop-dialog">×</button>
+        <div>
+          <div class="eyebrow" id="loop-dialog-eyebrow">A → B</div>
+          <h3 id="loop-dialog-title">New loop</h3>
+        </div>
+        <button type="button" class="close-sheet" data-close="loop-dialog" aria-label="Close">×</button>
       </div>
       <input id="loop-id" type="hidden" />
-      <div class="field"><label>Loop name</label><input id="loop-title" required placeholder="What are you closing?" /></div>
-      <div class="field"><label>A · Current state</label><textarea id="loop-a" required placeholder="Where is it now?"></textarea></div>
-      <div class="field"><label>B · Done</label><textarea id="loop-b" required placeholder="What does done look like?"></textarea></div>
-      <button class="primary full" type="submit">Save</button>
-      <button id="toggle-loop-btn" class="sheet-link hidden" type="button"></button>
+      <div class="field"><label>Loop</label><input id="loop-title" required placeholder="What are you closing?" /></div>
+      <div class="field"><label>A · Right now</label><textarea id="loop-a" required placeholder="Where is it now?"></textarea></div>
+      <div class="field"><label>B · Done means</label><textarea id="loop-b" required placeholder="What is true when this is closed?"></textarea></div>
+      <div id="first-step-field" class="field"><label>First move <span>optional</span></label><input id="loop-first-step" placeholder="What should happen next?" /></div>
+      <button id="save-loop-btn" class="primary full" type="submit">Create loop</button>
+      <div id="loop-danger-zone" class="danger-zone hidden">
+        <button id="toggle-loop-btn" class="sheet-link" type="button"></button>
+        <button id="delete-loop-btn" class="sheet-link danger-link" type="button">Delete loop</button>
+      </div>
     </form>
   </dialog>
 
   <dialog id="step-dialog" class="sheet-dialog">
-    <form id="step-form" method="dialog" class="sheet">
+    <form id="step-form" class="sheet">
       <div class="handle"></div>
       <div class="sheet-head">
-        <h3 id="step-dialog-title">Add step</h3>
-        <button type="button" class="close-sheet" data-close="step-dialog">×</button>
+        <div>
+          <div class="eyebrow">Box</div>
+          <h3 id="step-dialog-title">Add step</h3>
+        </div>
+        <button type="button" class="close-sheet" data-close="step-dialog" aria-label="Close">×</button>
       </div>
       <input id="step-id" type="hidden" />
       <input id="step-insert-after" type="hidden" />
-      <div class="field"><label>Step</label><input id="step-title" required placeholder="What has to happen next?" /></div>
-      <div class="two">
-        <div class="field"><label>Status</label><select id="step-status">
-          <option value="not_started">Not started</option>
-          <option value="active">Active</option>
-          <option value="waiting">Waiting</option>
-          <option value="delegated">Delegated</option>
-          <option value="closed">Closed</option>
-        </select></div>
-        <div class="field"><label>Deadline</label><input id="step-deadline" type="datetime-local" /></div>
+      <input id="step-status" type="hidden" value="not_started" />
+
+      <div class="field"><label>What has to happen?</label><input id="step-title" required placeholder="One clear move" /></div>
+
+      <div id="state-block" class="state-block">
+        <label class="field-label">State</label>
+        <div class="state-picker" role="group" aria-label="Step state">
+          <button type="button" data-state="active">Doing</button>
+          <button type="button" data-state="waiting">Waiting</button>
+          <button type="button" data-state="delegated">Delegated</button>
+          <button type="button" data-state="not_started">Later</button>
+        </div>
       </div>
-      <div class="two">
-        <div class="field"><label>Waiting on</label><input id="step-waiting-on" placeholder="Optional" /></div>
-        <div class="field"><label>Delegated to</label><input id="step-delegated-to" placeholder="Optional" /></div>
+
+      <div id="waiting-field" class="field conditional hidden"><label>Waiting on</label><input id="step-waiting-on" placeholder="Who or what?" /></div>
+      <div id="delegated-fields" class="conditional hidden">
+        <div class="field"><label>Delegated to</label><input id="step-delegated-to" placeholder="Who owns the move?" /></div>
+        <div class="field"><label>What did you hand off? <span>optional</span></label><textarea id="step-delegation-note" placeholder="Short handoff note"></textarea></div>
       </div>
-      <div class="field"><label>Delegation note</label><textarea id="step-delegation-note" placeholder="What did you hand off?"></textarea></div>
-      <div class="field"><label>Hard rule</label><textarea id="step-hard-rule" placeholder="Do not move forward until..."></textarea></div>
-      <label class="current-check"><input id="step-current" type="checkbox" /> <span>Make this the current step</span></label>
-      <button class="primary full" type="submit">Save step</button>
+
+      <details class="more-fields" id="step-more">
+        <summary>Deadline or rule</summary>
+        <div class="field"><label>Hard deadline</label><input id="step-deadline" type="datetime-local" /></div>
+        <div class="field"><label>Hard rule</label><textarea id="step-hard-rule" placeholder="Do not move forward until..."></textarea></div>
+      </details>
+
+      <button id="save-step-btn" class="primary full" type="submit">Save step</button>
+      <button id="make-current-btn" class="secondary full hidden" type="button">Make current</button>
+      <button id="reopen-step-btn" class="secondary full hidden" type="button">Reopen step</button>
       <button id="add-after-step-btn" class="sheet-link hidden" type="button">+ Add a step after this</button>
+      <button id="delete-step-btn" class="sheet-link danger-link hidden" type="button">Delete step</button>
     </form>
   </dialog>
 
+  <dialog id="rule-dialog" class="confirm-dialog">
+    <form method="dialog" class="confirm-card">
+      <div class="eyebrow">Hard rule</div>
+      <h3>Is the rule satisfied?</h3>
+      <p id="rule-dialog-text"></p>
+      <div class="confirm-actions">
+        <button value="cancel" class="secondary">Not yet</button>
+        <button id="confirm-close-step-btn" value="confirm" class="primary">Yes, close step</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script type="module" src="./app.js"></script>
 </body>
 </html>
